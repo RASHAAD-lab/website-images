@@ -1,0 +1,193 @@
+<!-- file: index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cats Follow the Mouse</title>
+  <style>
+    body {
+      background: linear-gradient(to bottom, #aee1f9, #ffffff);
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Comic Sans MS', sans-serif;
+      text-align: center;
+      cursor: none; /* Hide normal cursor */
+    }
+
+    h1 {
+      color: #ff66cc;
+      margin-top: 10px;
+    }
+
+    .cat {
+      width: 30px;
+      height: 30px;
+      background: #ffcc99;
+      border-radius: 50% 50% 40% 40%;
+      position: absolute;
+      animation: colorChange 6s linear infinite;
+      transition: transform 0.2s ease-out;
+    }
+
+    .cat::before {
+      content: '';
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #ffcc99;
+      border-radius: 50%;
+      top: 4px;
+      left: -6px;
+    }
+
+    .cat::after {
+      content: '';
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #ffcc99;
+      border-radius: 50%;
+      top: 4px;
+      right: -6px;
+    }
+
+    .eye {
+      width: 4px;
+      height: 4px;
+      background: black;
+      border-radius: 50%;
+      position: absolute;
+      top: 10px;
+    }
+
+    .eye.left {
+      left: 8px;
+    }
+
+    .eye.right {
+      right: 8px;
+    }
+
+    .cloud {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      opacity: 0.7;
+      animation: drift 20s linear infinite;
+    }
+
+    .mouse-cursor {
+      position: absolute;
+      width: 20px;
+      height: 30px;
+      background: gray;
+      border-radius: 50% 50% 40% 40%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    .mouse-cursor::before {
+      content: '';
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: pink;
+      border-radius: 50%;
+      top: 5px;
+      left: 3px;
+    }
+
+    .mouse-cursor::after {
+      content: '';
+      position: absolute;
+      width: 6px;
+      height: 6px;
+      background: pink;
+      border-radius: 50%;
+      top: 5px;
+      right: 3px;
+    }
+
+    @keyframes colorChange {
+      0% { background: #ffcc99; }
+      25% { background: #ffd1dc; }
+      50% { background: #c1f0f6; }
+      75% { background: #d1ffd6; }
+      100% { background: #ffcc99; }
+    }
+
+    @keyframes drift {
+      0% { transform: translateX(-100px); }
+      100% { transform: translateX(110vw); }
+    }
+  </style>
+</head>
+<body>
+  <h1>🐱 Cats Follow the Mouse! 🐭</h1>
+
+  <div class="mouse-cursor"></div>
+
+  <script>
+    const mouseCursor = document.querySelector('.mouse-cursor');
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+
+    // Create clouds
+    for (let i = 0; i < 8; i++) {
+      const cloud = document.createElement('div');
+      const size = 60 + Math.random() * 100;
+      cloud.classList.add('cloud');
+      cloud.style.width = size + 'px';
+      cloud.style.height = size * 0.6 + 'px';
+      cloud.style.top = Math.random() * 80 + 'vh';
+      cloud.style.left = Math.random() * 100 + 'vw';
+      cloud.style.animationDuration = (15 + Math.random() * 10) + 's';
+      document.body.appendChild(cloud);
+    }
+
+    // Create tiny floating cats
+    const cats = [];
+    for (let i = 0; i < 40; i++) {
+      const cat = document.createElement('div');
+      cat.classList.add('cat');
+      cat.style.left = Math.random() * 100 + 'vw';
+      cat.style.top = Math.random() * 100 + 'vh';
+
+      const leftEye = document.createElement('div');
+      leftEye.classList.add('eye', 'left');
+      const rightEye = document.createElement('div');
+      rightEye.classList.add('eye', 'right');
+
+      cat.appendChild(leftEye);
+      cat.appendChild(rightEye);
+      document.body.appendChild(cat);
+      cats.push({ el: cat, x: Math.random() * window.innerWidth, y: Math.random() * window.innerHeight });
+    }
+
+    // Move the fake mouse cursor
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      mouseCursor.style.left = mouseX + 'px';
+      mouseCursor.style.top = mouseY + 'px';
+    });
+
+    // Animate cats to follow the mouse
+    function animateCats() {
+      cats.forEach(cat => {
+        const dx = mouseX - cat.x;
+        const dy = mouseY - cat.y;
+        cat.x += dx * 0.02;
+        cat.y += dy * 0.02;
+        cat.el.style.transform = `translate(${cat.x}px, ${cat.y}px)`;
+      });
+      requestAnimationFrame(animateCats);
+    }
+
+    animateCats();
+  </script>
+</body>
+</html>
